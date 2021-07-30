@@ -24,7 +24,7 @@
 			document.getElementById('details').style.display = "none";
 
 			var url = window.location.href;
-			if (url.indexOf('https://ojdarez.github.io/zendesk-c3/') !== -1) {
+			if (url.indexOf('http://localhost:3000/') !== -1) {
 				if (url.indexOf('access_token=') !== -1) {
 					var access_token = readUrlParam(url, 'access_token');
 					localStorage.setItem('zauth', access_token);
@@ -63,7 +63,7 @@
 			var endpoint = 'https://zccojdarez.zendesk.com/oauth/authorizations/new';
 			var url_params = '?' +
 			'response_type=token' + '&' +
-			'redirect_uri=https://ojdarez.github.io/zendesk-c3/' + '&' +
+			'redirect_uri=http://localhost:3000/' + '&' +
 			'client_id=tickers' + '&' +
 			'scope=' + encodeURIComponent('read write');
 			window.location = endpoint + url_params;
