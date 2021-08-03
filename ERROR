@@ -1,0 +1,12 @@
+ACCES_TOKEN ERROR TYPES: (status, stausText, data):
+400
+BAD Request
+   {
+      error: 'invalid_request',
+      error_description: "'client_id', 'grant_type' required."
+   },
+   {
+  error: 'invalid_grant',
+  error_description: 'The provided access grant is invalid, expired, or revoked (e.g. invalid assertion, expired authorization token, bad end-user password credentials, or mismatching authorization code and redirection URI).'
+}
+
