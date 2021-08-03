@@ -1,5 +1,5 @@
 //imPORTs
-const Tickets = require('./public/js/getTickets')
+var { accessTickets } = require('./public/js/accessTickets.js')
 const cp = require('child_process')
 const ls = require('node-localstorage');
 const express = require('express');
@@ -8,13 +8,15 @@ const path = require('path');
 const http = require("http");
 const open = require("open");
 
+var ticket_data
 var isAuthorized = false;
+
 const PORT = 3000
 const app = express()
 const C_ID = "test_tickers"
 const SUBDOMAIN = "zccojdarez"
 const SCOPE = "tickets:read write"
-const TICKET_URL_1 = `https://${SUBDOMAIN}.zendesk.com/api/v2/tickets.json?per_page=25`;
+const TICKET_URL_1 = 'https://zccojdarez.zendesk.com/api/v2/tickets.json?per_page=25';
 const REDIRECT_URL = 'http://localhost:3000/' //'https://ojdarez.github.io/zendesk-c3/' 
 const z_AUTH_ROOT_URL = new URL(`https://${SUBDOMAIN}.zendesk.com/oauth/authorizations/new`);
 
@@ -44,27 +46,29 @@ async function getAuthorization() {
     const server = http.createServer( async (req, res) => {
         
         var redirUrl = req.url
-        console.log(redirUrl)
         var authCodeUrl = new URL(`${REDIRECT_URL}` + redirUrl)
         var isCode = authCodeUrl.searchParams.get('code')
         
         if (res.statusCode == 200 && isCode != null) {
+            
             //UPDATE LOCAL STORAGE DATA
             if(localStorage['code']) {localStorage.removeItem('code')}
             localStorage.setItem('code', isCode)
+
             //CLOSE SERVER AND NOTIFY USER OF SUCCESS
             isAuthorized = true
+            res.end(`<h1>Welcome to Zendesk Tickers</h1>
+                <a id="pageAnchor" class="btn" href="home/tickets">
+                    <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" alt="this slowpoke moves" width="250" />
+                </a>
+            `);
         } else {
             var isErr = authCodeUrl.searchParams.get('error')
             console.log(isErr)
             isAuthorized = false
+            res.end("Request Denied.")
         } 
 
-        res.end(`<h1>Welcome to Zendesk Tickers</h1>
-            <a id="pageAnchor" class="btn" href="home/tickets">
-                <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" alt="this slowpoke moves" width="250" />
-            </a>
-        `);
         req.socket.end();
         req.socket.destroy();
         server.close()
@@ -76,9 +80,10 @@ async function getAuthorization() {
             eventsEmitter.emit('clientAuthorized', redirUrl)
 
             //LOAD TICKETS JSON
-            const myTickets = new Tickets()
-            await myTickets.getTickets(TICKET_URL_1)
+            var at = new accessTickets(TICKET_URL_1)
+            ticket_data = await at.myTickets()
         } else {
+            //CLOSING BEFORE http.IncomingMessage IS RECEIVED.
             console.error('The connection was terminated while the message was still being sent');
         }
     }).listen(PORT, () => console.log('Listening for authorization on PORT ' + PORT)).on("error", err => {
@@ -134,5 +139,5 @@ eventsEmitter.on('clientAuthorized', async sentTo => {
 })
 
 getAuthorization().then(()=> {
-    eventsEmitter.emit('clientAuthorized')
+    //eventsEmitter.emit('clientAuthorized')
 })
