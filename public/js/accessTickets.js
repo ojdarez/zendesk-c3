@@ -1,5 +1,4 @@
 const { response } = require('express');
-const fs = require('fs');
 var http = require('http');
 const https = require('https');
 
@@ -12,8 +11,9 @@ const oAuthToken = "Bearer 441305d64e8abd9565dbf4fd025405375ee2d55faa03e90a1d2de
 
 class AccessTickets{
 
-    constructor (url) {
+    constructor (canAccess, url) {
         this.url = url
+        this.canAccess = canAccess
     }
 
     async myTickets() {
@@ -28,14 +28,14 @@ class AccessTickets{
 
         let jsonTickets = new Promise((resolve, reject) => {
             https.get(this.url, {headers : { "Authorization": oAuthToken }}, (response) => {
-                    let data = ''
+                    let data = ""
                     response.on('data', (d) => {
                         data += d
                     });
                     
                     response.on('end', async () => {
-                        var jsonContent  = JSON.parse(JSON.stringify(data, null, 4));
-                        resolve(jsonContent)
+                        var jsonContent = JSON.stringify(data,null,2)
+                        resolve(JSON.parse(jsonContent))
                     })
             }).on('error', (err) => { 
                 (console.error(err))
@@ -48,10 +48,7 @@ class AccessTickets{
     }
 }
 
-// fs.writeFileSync('../../ticket_request.json', '', ()=>{console.log('~Ticket request file is ready~')})
-// fs.writeFileSync('../../ticket_request.json', jsonContent)
+// fs.writeFileSync("./ticket_request.json", "")
+// fs.writeFileSync("./ticket_request.json", ticket_data)
 
 module.exports = {accessTickets: AccessTickets}
-
-// var at = new AccessTickets('https://zccojdarez.zendesk.com/api/v2/tickets.json?per_page=25')
-// at.myTickets()

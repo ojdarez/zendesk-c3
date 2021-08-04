@@ -1,7 +1,14 @@
 # zendesk-c3
-Zendesk Ticket Viewer Co-Op Coding Challenge.
---Create Zendesk account following directive provided.
---Enable API in account.
-   -Select Admin in sidebar.
-   -Under CHANNELS; select API.
-   -Agree with T&C. Enable API.
+
+/*
+HAVE A BROWSER OPEN PRFERRABLY CHROME OR EDGE
+TO RUN APPLICATION:
+   CLONE REPO LOCALLY ON MACHINE 7 INSTALL ALL DEPENDENCIES.
+   1.) Open file to root folder.
+   2.) In IDE consol, run {npm start tickers}.
+
+PROGRAM RUNS ON LOCAL HOST PORT 3000
+
+TO END APPLICATION:
+   Enter {Ctrl C} in IDE terminal.
+*/

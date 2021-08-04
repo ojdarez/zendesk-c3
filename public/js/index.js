@@ -1,25 +1,94 @@
-//"use strict";
-const ls = require('node-localstorage');
-const { URL } = require("url");
-const axios = require("axios");
+"use strict";
+//IMPORTS 
 const http = require("http");
 const open = require("open");
-const fs = require('fs');
+const { URL } = require("url");
+const ls = require('node-localstorage');
+const EventEmitter = require('events');
+const eventsEmitter = new EventEmitter()
+const { cAuth, sDomain, reDirUrl } = require ('./zAuthUrl.js');
 
-const C_ID = "test_tickers"
-const SUBDOMAIN = "zccojdarez"
-const SCOPE = "tickets:read write"
+//PARAMS
 const PORT = process.env.port || 3000;
-const REDIRECT_URL = 'http://localhost:3000/' //'https://ojdarez.github.io/zendesk-c3/'
-const TOKEN_URL = `https://${SUBDOMAIN}.zendesk.com/oauth/tokens` 
-const z_AUTH_ROOT_URL = new URL(`https://zccojdarez.zendesk.com/oauth/authorizations/new`);
+const TOKEN_URL = `https://${sDomain}.zendesk.com/oauth/tokens` 
 
 if (typeof localStorage === "undefined" || localStorage === null) {
     const LocalStorage = ls.LocalStorage;
     var localStorage = new LocalStorage('./scratch');
 }
 
-module.exports = {Auth, isAuthorized};
+//GET AUTHORIZATION & VALIDATE CLIENT IF NEW USER WITH BASIC AUTH. BEFORE AUTHORIZATION
+class AUTHnVAL {
+    async getAuthorization() {
+        console.log("Awaiting authorization ...")
+        var isAuthorized;
+        const clientAuth = new cAuth()
+        const authUrl = await clientAuth.zAuthUrl();
+
+        const auth = new Promise((resolve, reject) => {
+            const server = http.createServer( async (req, res) => {
+
+                var newUrlReq = req.url
+                var authCodeUrl = new URL(`${reDirUrl}` + newUrlReq)
+
+                //Incoming Message from Redirect URL after auth. attempt
+                let isCode = authCodeUrl.searchParams.get('code');
+                let isError = authCodeUrl.searchParams.get('error');
+                isCode != null ? isAuthorized = true : isAuthorized = false;
+                
+                if (res.statusCode == 200 && isCode != null) {
+                    //UPDATE LOCAL STORAGE DATA
+                    if(localStorage['code']) {localStorage.removeItem('code')}
+                    localStorage.setItem('code', isCode)
+                    
+                    //CLOSE SERVER AND NOTIFY USER OF SUCCESS
+                    res.end(
+                        `<h1>Welcome to Zendesk Tickers</h1>
+                        <a id="pageAnchor" class="btn" href="home/tickets">
+                            <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" width="250" />
+                        </a>
+                        `
+                    );
+                } else if (isError != null) {
+                    console.log(isError)
+                    res.end("Request unauthorized :?")
+                } 
+
+                //END SERVER
+                req.socket.end();
+                req.socket.destroy();
+                server.close()
+
+                //ONCE AUTH CONNECTION IS CLOSED: DO THIS
+                if (res.writableFinished) {
+                    resolve(isAuthorized)
+                } else {
+                    //CLOSING BEFORE http.IncomingMessage IS RECEIVED.
+                    console.error('The connection was terminated while the message was still being sent');
+                }
+            }).listen(PORT, () => 
+                console.log('Listening for authorization on PORT ' + PORT)
+            ).on("error", err => {
+                if (err.message == "Error: listen EADDRINUSE: address already in use :::3000") {
+                    console.log(err.message+"\nPlease clear port ${PORT} and retry!")
+                } else {
+                    console.log("Error: " + err.message);
+                    return err.statusCode;
+                }
+                reject(err)
+            });
+        })
+
+        //Open auth page on web.
+        if (!isAuthorized) {
+            await open(authUrl)
+        }
+
+        return await auth;
+    }
+}
+
+module.exports = {processAuth: AUTHnVAL};
 
 // async function setSecret() {
 //     try {

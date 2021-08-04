@@ -4,15 +4,20 @@
   "description": "Zendesk Ticket Web app.",
   "main": "index.js",
   "scripts": {
+    "tickers": "npm-run-all --parallel start sync",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "dev": "nodemon -e * app.js",
+    "sync": "browser-sync start --sw --files '**/*.json' 'views/*.ejs' 'css/*.css'"
   },
   "author": "Ojdarez",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
+    "browser-sync": "^2.27.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "npm-run-all": "^4.1.5",
     "open": "^8.2.1"
   },
   "devDependencies": {
