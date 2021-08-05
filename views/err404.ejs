@@ -8,14 +8,15 @@
 </head>
 <body>
     <div>
-        <img src="./404.gif" width="404" />
+        <img src="404.gif" width="404" />
         <span>
             Sorry, that route doesn't exist :/
         </span>
     </div>
-    <a>
-        RETRY LOGIN?
-    </a>
-            
+    <% if (authDenied == true) {%>
+        <a href="<%- authUrl%>">
+            <strong>Click To Retry Access</strong>
+        </a>
+    <% }%>
 </body>
 </html>

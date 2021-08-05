@@ -43,14 +43,14 @@ class AUTHnVAL {
                     
                     //CLOSE SERVER AND NOTIFY USER OF SUCCESS
                     res.end(
-                        `<h1>Welcome to Zendesk Tickers</h1>
-                        <a id="pageAnchor" class="btn" href="home/tickets">
-                            <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" width="250" />
+                        `<h1 style="color:blue;text-align:center;">Welcome to Zendesk Tickers</h1>
+                        <a id="pageAnchor" href="home/tickets" style="vertical-align:middle;">
+                            <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" width=35% style="align:middle;"/>
                         </a>
                         `
                     );
                 } else if (isError != null) {
-                    console.log(isError)
+                    localStorage.setItem('code', isError)
                     res.end("Request unauthorized :?")
                 } 
 
@@ -88,7 +88,11 @@ class AUTHnVAL {
     }
 }
 
-module.exports = {processAuth: AUTHnVAL};
+module.exports = {
+    processAuth: AUTHnVAL,
+    codeResult: localStorage['code'],
+    authUrl: this.authUrl
+};
 
 // async function setSecret() {
 //     try {

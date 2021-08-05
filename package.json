@@ -4,7 +4,7 @@
   "description": "Zendesk Ticket Web app.",
   "main": "index.js",
   "scripts": {
-    "tickers": "npm-run-all --parallel start sync",
+    "tickers": "npm-run-all --parallel dev sync",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
     "dev": "nodemon -e * app.js",

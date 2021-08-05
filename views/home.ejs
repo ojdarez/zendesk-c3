@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<header><%- include('./partials/header.ejs') %></header>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,12 +15,22 @@
         }
     </style>
 </head>
-<body>
-    <h1 class="app-title">Welcome to Zendesk Tickers</h1>
-    <a id="pageAnchor" href="home/tickets">
-        <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" alt="this slowpoke moves" width="500" />
-    </a>
-    <div></div>
-    <script></script>
+<body style="text-align: center;">
+    <main>
+        <div>
+            <h1 class="app-title">Welcome to Zendesk Tickers</h1>
+            <a id="pageAnchor" href="home/tickets" style="text-align: center;vertical-align: middle;">
+                <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" alt="this slowpoke moves" width="500"/>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <%- include('./partials/footer.ejs'); %>
+    </footer>
+
+    <script>
+
+    </script>
 </body>
 </html>

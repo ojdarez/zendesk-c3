@@ -11,19 +11,11 @@ const oAuthToken = "Bearer 441305d64e8abd9565dbf4fd025405375ee2d55faa03e90a1d2de
 
 class AccessTickets{
 
-    constructor (canAccess, url) {
+    constructor (url) {
         this.url = url
-        this.canAccess = canAccess
     }
 
     async myTickets() {
-
-        const serv = http.createServer(function(request, response){
-
-            //The following code will print out the incoming request text
-            request.pipe(response);
-        }).listen(443, '127.0.0.1');
-        
         console.log('Listening on port 443 ... for tickets');
 
         let jsonTickets = new Promise((resolve, reject) => {
@@ -47,8 +39,5 @@ class AccessTickets{
         return jsonTickets
     }
 }
-
-// fs.writeFileSync("./ticket_request.json", "")
-// fs.writeFileSync("./ticket_request.json", ticket_data)
 
 module.exports = {accessTickets: AccessTickets}

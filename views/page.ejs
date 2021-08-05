@@ -54,21 +54,16 @@
     </style>
 </head>
 <body>
-    <h1>Tickets</h1>
-    <% tickets.forEach(ticket => { %>
-        <div class="tab">
-            <button class="tablinks" id="(<%ticket.id%>)" onclick="openTicket(event, '<%(ticket.id)%>')">
-                <li>
-                    <h><%= ticket.id %></h3> 
-                    (<%= ticket.subject %>)
-                </li>
-            </button>
-        </div>
-        <div id="(<%ticket.id%>)" class="tabcontent">
-            <h3><strong>Hi</strong></h3>
-            <p><%= ticket.description%></p>
-        </div>
-    <% }) %>
+    <div class="pagination">
+        <a href="#">&laquo;</a>
+        <a href="#">1</a>
+        <a class="active" href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">6</a>
+        <a href="#">&raquo;</a>
+    </div>
 </body>
 
 <script>
