@@ -31,6 +31,7 @@ class AccessTickets{
                     })
             }).on('error', (err) => { 
                 (console.error(err))
+                console.log("Error accessing Tickets. ")
                 reject(e)
                 return 
             })

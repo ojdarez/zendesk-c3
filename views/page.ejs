@@ -4,10 +4,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div id="progress-bar"></div>
     <title style="text-align: center;font-weight: normal;font-size: 2.6rem">Tickets Page</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
     <style>
         * {box-sizing: border-box}
         body {font-family: "Lato", sans-serif;}
+
+        #progress-bar {
+            position: absolute;
+            left:0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 4px;
+
+            background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+            background-size: 900% 900%;
+
+            animation: rainbow 9s ease infinite;
+        }
+
+        @keyframes rainbow { 
+            0% { background-position: 0% 100%; }
+            50% { background-position: 100% 200%; }
+            100% {background-position: 0% 100%; }
+        }
 
         /* Style the tab */
         .tab {
@@ -15,12 +38,13 @@
             border: 1px solid rgb(238, 201, 201);
             background-color: #f1f1f1;
             width: 30%;
-            height: 300px;
+            height: auto;
         }
 
         /* Style the buttons that are used to open the tab content */
         .tab button {
             display: block;
+            position:inherit;
             background-color: inherit;
             color: black;
             padding: 22px 16px;
@@ -34,12 +58,12 @@
 
         /* Change background color of buttons on hover */
         .tab button:hover {
-            background-color: rgb(233, 231, 127);
+            background-color: rgb(67, 226, 80);
         }
 
         /* Create an active/current "tab button" class */
         .tab button.active {
-            background-color: rgb(123, 206, 181);
+            background-color: rgb(231, 52, 52);
         }
 
         /* Style the tab content */
@@ -49,28 +73,161 @@
             border: 1px solid #ccc;
             width: 70%;
             border-left: none;
-            height: 300px;
+            height: auto;
+            scroll-behavior: auto;
+        }
+
+        .center footer {
+            text-align: center;
+            margin: 5px 0;
+            /* bottom: 0%; */
+        }
+
+        .pagination a {
+            bottom: 10%;
+            color: #0c0f3f;
+            margin: 4px;
+            font-size: 22px;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration:ivory;
+            transition: background-color .3s;
+            text-align: center;
+            align-self: center
+        }
+
+        /* Style the active/current link */
+        .pagination a.active {
+            background-color: rgb(14, 245, 187);
+            color: white;
+        }
+
+        .pagination a:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .pagination a:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        /* Add a grey background color on mouse-over */
+        .pagination a:hover:not(.active) {background-color: rgb(187, 174, 114);}
+
+        .unassigned { color: goldenrod;}
+        .low { color: aliceblue;}
+        .normal { color:dodgerblue}
+        .high { color: firebrick;}
+        .urgent { color: maroon}
+
+        .rainbow-text {
+            background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
         }
     </style>
 </head>
-<body>
-    <div class="pagination">
-        <a href="#">&laquo;</a>
-        <a href="#">1</a>
-        <a class="active" href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#">6</a>
-        <a href="#">&raquo;</a>
+<body style="vertical-align: initial;">
+    <h1 style="text-align: center; text-shadow: #0c0f3f;">TICKERS</h1> 
+    <h4 id="date" class="rainbow-text" style="float: right"></h4>
+    <main>
+        </div>
+        <% tickets.forEach(ticket => { %>
+            <div class="tab">
+                <button class="tablinks" id="<%= ticket.id%>"  onclick="openTicket(event, this.id)">
+                        <h3>ID <%= ticket.id %></h3> 
+                        <h4><%=ticket.assignee_id %></h4>
+                        <% if (ticket.priority == null) { %>
+                            <div class="unassigned" id="priority">Priotity: Not assigned ...</div>
+                        <%} else if (ticket.priority == "high") {%>
+                            <div class="high" id="priority">Priotity: High!!!</div>
+                        <%} else if (ticket.priority == "urgent") {%>
+                            <div class="urgent" id="priority">Priotity: Urgent!!!!</div>
+                        <%} else if (ticket.priority == "normal") {%>
+                            <div class="normal" id="priority">Priotity: Normal.</div>
+                        <%} else if (ticket.priority == "low") {%>
+                            <div class="low" id="priority">Priotity: Hakuna Matata.</div>
+                        <%}%>
+
+                        <%if (ticket.status == "open") {%>
+                            <i class="fas fa-lock-open" style="float: right; vertical-align: 10px;"> </i>
+                        <%} else if (ticket.status == "solved") {%>
+                            <i class="fas fa-lock" style="float: right; vertical-align: 10px;"></i>
+                        <%} else if (ticket.status == "pending") {%>
+                            <i class="fas fa-unlock-alt" style="float: right; vertical-align: 10px;"></i>
+                        <%}%>
+                            
+                </button>
+            </div>
+            <div id="<%= ticket.id%>c" class="tabcontent"> 
+                <h3><strong><div style="color: rgb(21, 126, 112);">Subject: </div></strong><%= ticket.subject %></strong></h3>
+                <h5 class="created_at"><%= ticket.created_at%></h5>
+                <p><%= ticket.description%></p>
+            </div>
+        <% }) %>
+        <div>
+    </main>
+    <div class="center footer">
+        <span class="pagination">
+            <a href="#">&laquo;</a>
+            <a href= "#" class="active"><%= currentPage %></a>
+            <a href="#">&raquo;</a>
+        </span>
+        <footer>
+            <%- include('./partials/footer.ejs'); %>
+        </footer>
     </div>
 </body>
 
 <script>
-    function openTicket(evt, t_id) {
+    const currentDate = new Date();
+    const currentDayOfMonth = currentDate.getDate();
+    const currentMonth = currentDate.getMonth(); 
+    const currentYear = currentDate.getFullYear();
+    const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
+
+    const longEnUSFormatter = new Intl.DateTimeFormat('en-US', {
+        year:  'numeric',
+        month: 'long',
+        day:   'numeric',
+    });
+    document.getElementById("date").innerHTML = longEnUSFormatter.format(currentDate);
+
+    function since(apiDate) {
+        const dateFromAPI = (new Date(apiDate)).getTime()
+        const todayTimeStamp = currentDate.getTime()
+
+        const microSecondsDiff = Math.abs(dateFromAPI - todayTimeStamp);
+        const daysDiff = Math.round(microSecondsDiff / (1000 * 60 * 60  * 24));
+
+        if (daysDiff > 1 & daysDiff <= 29) {return `Created: ${daysDiff} days ago.`}
+        else if (daysDiff > 29 & daysDiff < 365) {{return `Created: +${Math.round(daysDiff/30)} months ago.`}}
+        else if (daysDiff > 365) {{return `Created: +${Math.round(daysDiff/30)} years ago.`}}
+        else {return "New Ticket"}
+    }
+
+    function setCreateDate() {
+        // Get all elements with class="tabcontent" and hide them
+        var tabContentTime = document.getElementsByClassName("created_at")
+        var tablinks = document.getElementsByClassName("tablinks")
+        for (i = 0; i < tabContentTime.length; i++) {
+            var time = tabContentTime[i].innerHTML
+            var result = since(time);
+            tabContentTime[i].innerHTML = result
+        }
+    }
+
+
+    let progressBar = document.querySelector("#progress-bar");
+        window.onload = function() {
+        progressBar.style.display = 'none';
+    };
+
+    function openTicket(evt, id) {
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
-
         for (i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
         }
@@ -79,13 +236,14 @@
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
-        document.getElementById(t_id).style.display = "block";
+        document.getElementById(id+'c').style.display = "block";
         evt.currentTarget.className += " active";
-        console.log(t_id)
     }
 
-    // Get the element with id="defaultOpen" and click on it
+    // Get the element with id="1" and click on it
     document.getElementById("1").click();
+
+    setCreateDate()
 </script>
 
 </html>

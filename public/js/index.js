@@ -43,9 +43,10 @@ class AUTHnVAL {
                     
                     //CLOSE SERVER AND NOTIFY USER OF SUCCESS
                     res.end(
-                        `<h1 style="color:blue;text-align:center;">Welcome to Zendesk Tickers</h1>
+                        `
+                        <h1 style="color:blue;text-align:center;">Welcome to Zendesk Tickers</h1>
                         <a id="pageAnchor" href="home/tickets" style="vertical-align:middle;">
-                            <img src="https://media.giphy.com/media/ka6loLNrqm0ao7LLbl/giphy.gif" width=35% style="align:middle;"/>
+                        <h3 style="text-align:center">Thanks for authorizing Tickers. Click or refesh to view tickets!</h3>
                         </a>
                         `
                     );
@@ -90,8 +91,7 @@ class AUTHnVAL {
 
 module.exports = {
     processAuth: AUTHnVAL,
-    codeResult: localStorage['code'],
-    authUrl: this.authUrl
+    codeResult: localStorage['code']
 };
 
 // async function setSecret() {

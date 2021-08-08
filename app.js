@@ -1,23 +1,49 @@
 //IMPORTS
 var { accessTickets } = require('./public/js/accessTickets.js')
 var { processAuth, codeResult, authUrl } = require('./public/js/index.js')
-const curr_page = require("./curr_tickets_page.json")
-const next_page = require("./next_ticket_page.json")
-const prev_page = require("./prev_ticket_page.json")
+const pages = require("./curr_tickets_page.json")
 const ls = require('node-localstorage');
 const express = require('express');
 const path = require('path');
 
 //USEFUL VARS & CONSTS
 var jData;
+var jTickets = "";
+var tickets = [];
 const PORT = 3000
 const app = express()
 const fs = require('fs');
-const TICKET_URL_1 = 'https://zccojdarez.zendesk.com/api/v2/tickets.json?per_page=25'
+const TICKET_URL_1 = 'https://zccojdarez.zendesk.com/api/v2/tickets.json?per_page=100'
 
 const clientAuth = new processAuth()
 const EventEmitter = require('events');
 const eventsEmitter = new EventEmitter()
+
+async function getTicketContent(apiUrl) {
+    var at = new accessTickets(apiUrl)
+    const ticketContent = new Promise((resolve, reject) => {
+        at.myTickets().then(tickets_data => {
+            fs.writeFileSync("./curr_tickets_page.json", "")
+            fs.writeFileSync("./curr_tickets_page.json", tickets_data)
+            var pages = fs.readFileSync('./curr_tickets_page.json', (err, data) => {
+                if (err) { reject(err); throw err; };
+            });
+            return pages
+        }).then(result => { 
+            next = (JSON.parse(result.toString())).next_page
+            jTickets = (JSON.parse(result.toString())).tickets
+            for(var i = 0; i < jTickets.length; ++i){
+                tickets.push(jTickets[i])
+            }
+            if(next != null) {
+                //console.log(tickets)
+                getTicketContent(next)
+            }
+            resolve(jData)
+        })
+    })
+    return await ticketContent;
+}
 
 async function startTickers() {
     clientAuth.getAuthorization().then((authSuccess)=> {
@@ -25,8 +51,18 @@ async function startTickers() {
         if (!authSuccess) {    // Authorization denied || failed.
             task = "unAuthorized"
         } 
+        console.log(authSuccess)
         return task
     }).then( task => {
+        getTicketContent(TICKET_URL_1)
+        // while(next!=null) {
+        //     var ticketData = getTicketContent(next)
+        //     console.log(ticketData)
+        //     next = null;
+        //     // tickets += ticketData.tickets
+        //     // next = ticketData.next_page
+        //     // console.log(next)
+        // }
         return appRun(task)
     })
 }
@@ -46,10 +82,12 @@ function appRun(task) {
         
         var sites = ['/','/home','/home/tickets','/login']
 
-        //const lastPage = Math.ceil(config.count / 25);
+        //PAGINATION FACTORS
+        const firstPage = 1;
+        let pages = (tickets.lengtth / 25) + (tickets.length % 25);
+        let lastPage = pages == firstPage ? firstPage : pages
         try{
-
-            app.get(`/?code=${codeResult}`, (req, res) => {
+            app.get(`/`, (req, res) => {
                 res.render("home")
             })
 
@@ -58,25 +96,14 @@ function appRun(task) {
             })
             
             app.get("/home/tickets", async (req, res, next) => {
-                let currentPage = req.query.page || 1;
-
-                var at = new accessTickets(TICKET_URL_1)
-                await at.myTickets().then(tickets_data => {
-                    fs.writeFileSync("./curr_tickets_page.json", "")
-                    fs.writeFileSync("./curr_tickets_page.json", tickets_data)
-                    var curr_page = fs.readFileSync('./curr_tickets_page.json', (err, data) => {
-                        if (err) throw err;
-                    });
-                    return curr_page
-                }).then(result => { 
-                    jData = JSON.parse(result.toString())
-                    return jData
-                }).then(
-
-                )
-                
-                
-                res.render("page")
+                res.render("page", {
+                    currentPage: firstPage,
+                    firstPage: firstPage,
+                    lastPage: lastPage,
+                    tickets: tickets,
+                    pages: pages,
+                    perPage: 25
+                })
             })
         } catch (err) {
             throw new Error(err);
@@ -94,9 +121,7 @@ function appRun(task) {
         app.get('/err404', (req, res) => {
             res.render("err404", {
                 authDenied: true,
-                authUrl: authUrl
             })
-            console.log(authUrl)
         })
     })
 
@@ -104,26 +129,3 @@ function appRun(task) {
 }
 
 startTickers()
-
-// {
-//     // tickets: config.tickets,
-//     // currentPage: currentPage,
-//     // totalItems: config.count,
-//     // lastPage: lastPage
-// }
-
-// <!-- <h1>Tickets</h1>
-//     <% tickets.forEach(ticket => { %>
-//         <div class="tab">
-//             <button class="tablinks" id="(<%ticket.id%>)" onclick="openTicket(event, '<%(ticket.id)%>')">
-//                 <li>
-//                     <h><%= ticket.id %></h3> 
-//                     (<%= ticket.subject %>)
-//                 </li>
-//             </button>
-//         </div>
-//         <div id="(<%ticket.id%>)" class="tabcontent">
-//             <h3><strong>Hi</strong></h3>
-//             <p><%= ticket.description%></p>
-//         </div>
-//     <% }) %> -->
